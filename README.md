@@ -3,7 +3,7 @@ Dataset and baselines for paper "MSInformalED: A Benchmark for Multi-Source Hete
 
 ## Data
 
-The dataset and the data format can be obtained from the “data” folder.
+The dataset can be obtained from the “data” folder. The data format is introduced in [this document](data/README.md).
 
 ## Codes
 
