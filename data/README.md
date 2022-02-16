@@ -3,7 +3,7 @@
 `MSInformalED.zip` file includes `train.json`, `dev.json` and `test.json` of MSInformalED dataset. The data format of the three `.json` files are the same. Each file contains a list and each item in list is a dict for a document. Take an instance in `train.json` as an example:
 
 ```JSON5
-[   // each item is a document
+[   // A list, each item is a dict for a document
     { 
         "id": 90076777, // an unique string for each document
         "content": [    // the content of the document. A list, each item is a sentence. Sentence index starts with 0.
