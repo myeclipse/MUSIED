@@ -12,4 +12,4 @@ This code is the implementation for BERT model. The implementations are based on
 
 ## Pre-trained model BERT
 
-Chinese BERT model can be obtained from [here].(https://github.com/huggingface/pytorch-transformers)
+Chinese BERT model can be obtained from [here.](https://github.com/huggingface/pytorch-transformers)
