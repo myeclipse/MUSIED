@@ -1,12 +1,12 @@
 # MSInformalED dataset
 
-`MSInformalED.zip` file includes `train.json`, `dev.json` and `test.json` of MSInformalED dataset. The data format of the three `.json` files are the same. Take an instance in `train.json` as an example:
+`MSInformalED.zip` file includes `train.json`, `dev.json` and `test.json` of MSInformalED dataset. The data format of the three `.json` files are the same. Each file contains a list and each item in list is a dict for a document. Take an instance in `train.json` as an example:
 
 ```JSON5
-[
-    {
-        "id": 90076777,
-        "content": [
+[   // each item is a document
+    { 
+        "id": 90076777, // an unique string for each document
+        "content": [    // the content of the document. A list, each item is a sentence. Sentence index starts with 0.
             "客服:Hi~请问您是遇到以下问题吗？,",
             "客服:您好，欢迎您进入人工客服，请输入您的问题，人工客服小美会竭诚为您服务的~,",
             "用户:餐内异物,",
@@ -22,12 +22,12 @@
             "客服:亲亲，请问订单是有什么问题呢[可怜][鲜花]，辛苦您详细描述一下呢,",
             "客服:亲亲，小美等的好辛苦[可怜]，由于您在3分钟内没有任何回应，系统已经自动结束对话了，小美不得不与您分开了呢>_<。如仍需帮助可再次发起会话，如没有其他问题，麻烦对小美的服务进行评价哦，满意请给朵鲜花，不满意请给鸡蛋，谢谢您~[亲亲]"
         ],
-        "events": [
+        "events": [ // a list for annotated events, each item is a dict for an event
             {
-                "type": "异物",
-                "trigger_word": "异物",
-                "sent_id": 2,
-                "offset": [
+                "type": "异物",   //  the event type
+                "trigger_word": "异物",   //  a string of the trigger word or phrase
+                "sent_id": 2,   // the index of the corresponding sentence, strates with 0
+                "offset": [ the offset of the trigger words in the character list
                     5,
                     7
                 ]
@@ -41,44 +41,9 @@
                     10
                 ]
             },
-            {
-                "type": "异物",
-                "trigger_word": "异物",
-                "sent_id": 9,
-                "offset": [
-                    35,
-                    37
-                ]
-            },
-            {
-                "type": "异物",
-                "trigger_word": "鸡蛋壳",
-                "sent_id": 9,
-                "offset": [
-                    39,
-                    42
-                ]
-            },
-            {
-                "type": "异物",
-                "trigger_word": "头发",
-                "sent_id": 9,
-                "offset": [
-                    44,
-                    46
-                ]
-            },
-            {
-                "type": "异物",
-                "trigger_word": "毛",
-                "sent_id": 9,
-                "offset": [
-                    51,
-                    52
-                ]
-            }
+            "......"
         ],
-        "domain": "Text Conversations"
+        "domain": "Text Conversations"  // the domain type of this document.
     }
 ]
 ```
