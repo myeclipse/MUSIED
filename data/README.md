@@ -5,7 +5,7 @@
 ```JSON5
 [   // A list, each item is a dict for a document
     { 
-        "id": 90076777, // an unique string for each document
+        "id": 90076777, // an unique digit string for each document
         "content": [    // the content of the document. A list, each item is a sentence. Sentence index starts with 0.
             "客服:Hi~请问您是遇到以下问题吗？,",
             "客服:您好，欢迎您进入人工客服，请输入您的问题，人工客服小美会竭诚为您服务的~,",
