@@ -27,7 +27,7 @@
                 "type": "异物",   //  the event type
                 "trigger_word": "异物",   //  a string of the trigger word or phrase
                 "sent_id": 2,   // the index of the corresponding sentence, strates with 0
-                "offset": [ the offset of the trigger words in the character list
+                "offset": [ // the offset of the trigger words in the character list
                     5,
                     7
                 ]
