@@ -48,3 +48,9 @@
 ]
 ```
 
+## Data statistics
+
+MSInformalED data constains three domains: User Review, Text Conversation and Phone Conversation. There are 11381 documents and 36883 event mentions in MSInformalED. The detail statistics are shown in the following figure:
+
+![image](picture/)
+
