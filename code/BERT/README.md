@@ -33,3 +33,9 @@ Put BERT model into directory `bert_pretrain`.
 │     └── pytorch_model.bin
 │     └── vocab.txt
 ```
+
+### Train and test the model
+
+- python run.py --train=True
+- python run.py --train=False
+
