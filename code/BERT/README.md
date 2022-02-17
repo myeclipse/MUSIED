@@ -13,3 +13,11 @@ This code is the implementation for BERT model. The implementations are based on
 ## Pre-trained model BERT
 
 Chinese BERT model can be obtained from [here.](https://github.com/huggingface/pytorch-transformers)
+
+The result of BERT model is put into directory `bert_pretrain` as follows.
+```
+├── bert_pretrain
+│     └── config.json
+│     └── pytorch_model.bin
+│     └── vocab.txt
+```
