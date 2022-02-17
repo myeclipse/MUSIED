@@ -16,7 +16,7 @@ This code is the implementation for `BiLSTM` and `BiLSTM-CRF` model.
 
 The Chinese character embeddings `token_vec_300.bin` can be obtain from [here.](https://github.com/liuhuanyong/ChineseEmbedding) Download and put `token_vec_300.bin` in directory `pretrained`.
 
-Run `utils.py` to obtain `char2vec_file.mat.npy` and `word2id.npy` and put them in directory `pretrained` for the following training.
+Run `pre_embedding.py` to obtain `char2vec_file.mat.npy` and `word2id.npy` and put them in directory `pretrained` for the following training.
 
 
 ```
