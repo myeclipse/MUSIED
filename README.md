@@ -7,4 +7,4 @@ The dataset can be obtained from the “data” folder. The data format is intro
 
 ## Codes
 
-We release the source codes for the baselines, including [DMCNN](code/DMCNN), [BiLSTM](code/BiLSTM), [BERT](code/BERT), [C-BiLSTM](code/C-BiLSTM) , [DMBERT](code/DMBERT), [HBTNGMA](code/HBTNGMA) and [MLBiNet](code/MLBiNet).
+We release the source codes for the baselines, including sentence-level models: [DMCNN](code/DMCNN), [BiLSTM](code/BiLSTM), [BERT](code/BERT), [C-BiLSTM](code/C-BiLSTM) , [DMBERT](code/DMBERT); document-level models: [HBTNGMA](code/HBTNGMA) and [MLBiNet](code/MLBiNet).
