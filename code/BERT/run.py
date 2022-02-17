@@ -19,7 +19,7 @@ class Config(object):
     def __init__(self,dataset):
         self.model_name = 'bert'
         self.train_path = dataset + '/train_sentence.json'
-        #self.dev_path = dataset + '/dev_sentence.json'
+        self.dev_path = dataset + '/dev_sentence.json'
         self.test_path = dataset + '/test_sentence.json'
         self.save_path = dataset +'/result/'
 
