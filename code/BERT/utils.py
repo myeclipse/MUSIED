@@ -77,17 +77,6 @@ def build_dataset(path,config):
                                 if triggers[i+1]==NONE:
                                     triggers[i+1] = 'I-{}'.format(trigger_type)
 
-                        # 不需要以下信息
-                        # event_key = (event_mention['start']+1, min(event_mention['end'], cut_off)+1,event_mention['event_type'])
-                        # arguments['events'][event_key] = []
-                        # for argument in item['arguments']:
-                        #     if argument['start'] >= cut_off:
-                        #         continue
-                        #     role = argument['role']
-                        #
-                        #     arguments['events'][event_key].append(
-                        #         (argument['start']+1, min(argument['end'], cut_off)+1, argument2idx[role]))
-
                     triggers_ids=[trigger2idx[i] for i in triggers]
                     if pad_size:
                         if len(triggers_ids) < pad_size:
@@ -98,7 +87,7 @@ def build_dataset(path,config):
                             triggers_ids = triggers_ids[:pad_size]
 
 
-                    contents.append((token_ids,triggers_ids,seq_len,mask,token,triggers,arguments))
+                    contents.append((token_ids,triggers_ids,seq_len,mask,token,triggers))
                 except:
 
                     continue
@@ -130,10 +119,9 @@ class DatasetIterater(object):
         mask = [_[3] for _ in datas]
         words=[_[4] for _ in datas]
         trigger = [_[5] for _ in datas]
-        arguments=[_[-1] for _ in datas]
 
 
-        return (x, seq_len, mask,words,trigger,arguments), y
+        return (x, seq_len, mask,words,trigger), y
 
     def __next__(self):
         if self.residue and self.index == self.n_batches:
