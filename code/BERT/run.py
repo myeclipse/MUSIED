@@ -63,6 +63,9 @@ if __name__ == '__main__':
 
     # train
     model = Model(config).to(config.device)
-    #model=torch.load(config.save_path+'latest_model.pt')
-    #eval(model,test_iter,'online-judge')
     train(config, model, train_iter, dev_iter)
+    
+    # test
+    #model=torch.load(config.save_path+'latest_model.pt')
+    #eval(model,test_iter,'test')
+    
