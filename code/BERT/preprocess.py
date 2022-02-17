@@ -1,16 +1,9 @@
-root='sum_first_two/document_level/split/'
+root='data/'
 paths=[
-        # 'train_judge.json',
-        # 'train_tel.json',
-        # 'train_online.json',
-        # 'dev_judge.json',
-        # 'dev_tel.json',
-        # 'dev_online.json',
-        # 'test_judge.json',
-        # 'test_tel.json',
-        'test_online.json'
+        'train.json',
+        'dev.json',
+        'test.json'
        ]
-output_file='sum_first_two/sentence_level/split/test_online_sentence.json'
 
 result=[]
 for file_path in paths:
@@ -43,6 +36,7 @@ for file_path in paths:
                     result.append(item[idx])
                 else:
                     result.append({'id':id,'sentence':sentence,'trigger':[]})
-
-with open(output_file,"w") as f:
-    f.write(json.dumps(result,indent=4, ensure_ascii=False))
+                
+    output_file=root+file_path[:file_path.index('.')]+'_sentence.json'
+    with open(output_file,"w") as f:
+        f.write(json.dumps(result,indent=4, ensure_ascii=False))
