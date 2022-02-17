@@ -14,8 +14,7 @@ This code is the implementation for BERT model. The implementations are based on
 
 ### Data Preprocess
 
-Run `preprocess.py` to obtain the sentence-level input of model. Then put the results into `data` directory.
-
+Run `preprocess.py` to obtain the sentence-level input of model. The result is saved in `data` directory.
 ```
 ├── data
 │     └── train_sentence.json
@@ -27,7 +26,7 @@ Run `preprocess.py` to obtain the sentence-level input of model. Then put the re
 
 Chinese BERT model can be obtained from [here.](https://github.com/huggingface/pytorch-transformers)
 
-The result of BERT model is put into directory `bert_pretrain` as follows.
+Put BERT model into directory `bert_pretrain`.
 ```
 ├── bert_pretrain
 │     └── config.json
