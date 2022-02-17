@@ -18,6 +18,7 @@ class Config(object):
     """配置参数"""
     def __init__(self,dataset):
         self.model_name = 'bert'
+        self.train = True
         self.train_path = dataset + '/train_sentence.json'
         self.dev_path = dataset + '/dev_sentence.json'
         self.test_path = dataset + '/test_sentence.json'
@@ -61,11 +62,13 @@ if __name__ == '__main__':
     time_dif = get_time_dif(start_time)
     print("Time usage:", time_dif)
 
-    # train
-    model = Model(config).to(config.device)
-    train(config, model, train_iter, dev_iter)
     
-    # test
-    #model=torch.load(config.save_path+'latest_model.pt')
-    #eval(model,test_iter,'test')
+    if config.train:
+        # train
+        model = Model(config).to(config.device)
+        train(config, model, train_iter, dev_iter)
+    else:
+        # test
+        model=torch.load(config.save_path+'latest_model.pt')
+        eval(model,test_iter,'test')
     
