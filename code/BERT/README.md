@@ -14,12 +14,13 @@ This code is the implementation for BERT model. The implementations are based on
 
 ### Data Preprocess
 
-Put preprocessed data in `data` directory as follows:
+Run `preprocess.py` to obtain the sentence-level input of model. Then put the results into `data` directory.
+
 ```
-├── bert_pretrain
-│     └── train.json
-│     └── dev.json
-│     └── test.json
+├── data
+│     └── train_sentence.json
+│     └── dev_sentence.json
+│     └── test_sentence.json
 ```
 
 ### Pre-trained model BERT
