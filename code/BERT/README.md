@@ -36,6 +36,5 @@ Put BERT model into directory `bert_pretrain`.
 
 ### Train and test the model
 
-- python run.py --train=True
-- python run.py --train=False
+Run `run.py` and set paramater `--train` is `True` when train and `False` when test.
 
