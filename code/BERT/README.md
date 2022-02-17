@@ -10,7 +10,9 @@ This code is the implementation for BERT model. The implementations are based on
 
 - transformers==4.9.2
 
-## Data Preprocess
+## Usage
+
+### Data Preprocess
 
 Put preprocessed data in `data` directory as follows:
 ```
@@ -20,7 +22,7 @@ Put preprocessed data in `data` directory as follows:
 │     └── test.json
 ```
 
-## Pre-trained model BERT
+### Pre-trained model BERT
 
 Chinese BERT model can be obtained from [here.](https://github.com/huggingface/pytorch-transformers)
 
