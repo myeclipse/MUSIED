@@ -26,9 +26,6 @@ def build_vocab(labels_trigger, BIO_tagging=True):
     return all_labels, label2idx, idx2label
 
 all_triggers, trigger2idx, idx2trigger = build_vocab(TRIGGERS)
-# all_entities, entity2idx, idx2entity = build_vocab(ENTITIES)
-# all_postags, postag2idx, idx2postag = build_vocab(POSTAGS, BIO_tagging=False)
-# all_arguments, argument2idx, idx2argument = build_vocab(ARGUMENTS,[], BIO_tagging=False)
 
 def build_dataset(path,config):
 
@@ -39,9 +36,7 @@ def build_dataset(path,config):
         with open(path, 'r', encoding='UTF-8') as f:
             data = json.load(f)
             for c,item in enumerate(data):
-                #event_count=len(item['trigger'])
-                #if event_count==0 or event_count==1:
-                #    continue
+
                 if len(item['trigger']) ==0:
                     if c%3==0:
                         continue
@@ -67,32 +62,8 @@ def build_dataset(path,config):
                         token_ids = token_ids[:pad_size]
                         seq_len = pad_size
                 triggers=[NONE for _ in range(len(token))][:cut_off]
-                arguments = {
-                    'candidates': [
-                        # ex. (5, 6, "entity_type_str"), ...
-                    ],
-                    'events': {
-                        # ex. (1, 3, "trigger_type_str"): [(5, 6, "argument_role_idx"), ...]
-                    },
-                }
-                try:
-                    #   不需要论元信息
-                    # for entity_mention in item['arguments']:
-                    #     start = entity_mention['start']
-                    #     if start >= cut_off:
-                    #         continue
-                    #     end = min(entity_mention["end"], cut_off)
-                    #     arguments['candidates'].append((start+1, end+1, entity_mention['entity_type']))
-                    #
-                    #     for i in range(start, end):
-                    #         entity_type = entity_mention['entity_type']
-                    #         if i == start:
-                    #             entity_type = 'B-E-{}'.format(entity_type)
-                    #         else:
-                    #             entity_type = 'I-E-{}'.format(entity_type)
-                    #
-                    #         triggers_entities[i+1] = entity_type
 
+                try:
 
                     for event_mention in item['trigger']:
                         if event_mention['start'] >= cut_off:
