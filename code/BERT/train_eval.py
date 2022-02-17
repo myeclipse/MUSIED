@@ -38,21 +38,19 @@ def init_network(model, method='xavier', exclude='embedding', seed=123):
 def eval(model, iterator, fname):
     model.eval()
 
-    words_all, triggers_all, triggers_hat_all, arguments_all, arguments_hat_all = [], [], [], [], []
+    words_all, triggers_all, triggers_hat_all = [], [], []
     with torch.no_grad():
 
         for i, (test, labels) in enumerate(iterator):
-            trigger_logits, trigger_hat_2d, triggers_y_2d, _, _, _, _, _ = model(test, labels)
+            trigger_logits, trigger_hat_2d, triggers_y_2d = model(test, labels)
 
 
             words_all.extend(test[3])
             triggers_all.extend(test[4])
             triggers_hat_all.extend(trigger_hat_2d.cpu().numpy().tolist())
-            arguments_2d=test[-1]
-            arguments_all.extend(arguments_2d)
 
 
-    triggers_true, triggers_pred, arguments_true, arguments_pred = [], [], [], []
+    triggers_true, triggers_pred= [], []
     with open('temp', 'w',encoding='utf-8') as fout:
         for i, (words, triggers, triggers_hat) in enumerate(zip(words_all, triggers_all, triggers_hat_all)):
             triggers_hat = triggers_hat[:len(words)]
@@ -80,7 +78,6 @@ def eval(model, iterator, fname):
 
 
     metric = '[trigger classification]\tP={:.3f}\tR={:.3f}\tF1={:.3f}\n'.format(trigger_p, trigger_r, trigger_f1)
-   
     metric += '[trigger identification]\tP={:.3f}\tR={:.3f}\tF1={:.3f}\n'.format(trigger_p_, trigger_r_, trigger_f1_)
     
     final = fname + ".P%.2f_R%.2f_F%.2f" % (trigger_p, trigger_r, trigger_f1)
@@ -113,7 +110,7 @@ def train(config, model, train_iter, dev_iter):
         print('Epoch [{}/{}]'.format(epoch + 1, config.num_epochs))
         for i, (trains, labels) in enumerate(train_iter):
             model.zero_grad()
-            trigger_logits, trigger_hat_2d, triggers_y_2d,_, _, _, _,_= model(trains,labels)
+            trigger_logits, trigger_hat_2d, triggers_y_2d = model(trains,labels)
 
             trigger_logits = trigger_logits.view(-1, trigger_logits.shape[-1])
             trigger_loss = criterion(trigger_logits, triggers_y_2d.view(-1))
