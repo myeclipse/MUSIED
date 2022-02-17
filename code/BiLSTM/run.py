@@ -8,23 +8,21 @@ import argparse
 from utils import build_dataset, build_iterator, get_time_dif
 # from pytorch_pretrained_bert import BertTokenizer
 from transformers import BertTokenizer
-from models.lstm_crf import Model
+from model import Model
 # import warnings
 # warnings.filterwarnings("ignore")
-
-# parser = argparse.ArgumentParser(description='Chinese Event Extraction')
-# parser.add_argument('--model', type=str, default='bert_lstm_crf', help='choose a model: Bert')
-# args = parser.parse_args()
 
 class Config(object):
 
     """配置参数"""
     def __init__(self,dataset):
-        self.model_name = 'bert'
-        self.train_path = dataset + '/customer/twice/train_sentence.json'
-        #self.dev_path = dataset + '/customer/twice/dev_sentence.json'
-        self.test_path = dataset + '/customer/twice/test_sentence.json'
-        self.save_path = dataset +'/result/customer/lstm'
+        
+        self.train=True
+        
+        self.train_path = dataset + '/train_sentence.json'
+        self.dev_path = dataset + '/dev_sentence.json'
+        self.test_path = dataset + '/test_sentence.json'
+        self.save_path = dataset +'/result/'
 
         self.device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')   # 设备
 
@@ -34,7 +32,6 @@ class Config(object):
         self.pad_size = 128                                             # 每句话处理成的长度(短填长切)
         self.learning_rate = 5e-5                                       # 学习率
         self.bert_path = './bert_pretrain'
-        #self.tokenizer = BertTokenizer.from_pretrained(self.bert_path)
         self.hidden_size = 300
         self.rnn_hidden = 300
         self.num_layers = 1
@@ -46,9 +43,6 @@ if __name__ == '__main__':
 
     config=Config(dataset)
 
-    # model_name = args.model  # bert
-    # x = import_module('models.' + model_name)
-
     # config = x.Config(dataset)
     # np.random.seed(11)
     # torch.manual_seed(11)
@@ -58,18 +52,21 @@ if __name__ == '__main__':
     start_time = time.time()
     print("Loading data...")
     train_data = build_dataset(config.train_path,config)
-    #dev_data = build_dataset(config.dev_path, config)
+    dev_data = build_dataset(config.dev_path, config)
     test_data = build_dataset(config.test_path, config)
 
     train_iter = build_iterator(train_data, config)
-    #dev_iter = build_iterator(dev_data, config)
+    dev_iter = build_iterator(dev_data, config)
     test_iter = build_iterator(test_data, config)
 
     time_dif = get_time_dif(start_time)
     print("Time usage:", time_dif)
 
-    # train
-    model = Model(config).to(config.device)
-    model = torch.load('latest_model.pt')
-    #eval(model,test_iter,'lstm_single')
-    train(config, model, train_iter, test_iter)
+    if config.train:
+        # train
+        model = Model(config).to(config.device)
+        train(config, model, train_iter, dev_iter)
+    else:
+        # test
+        model=torch.load(config.save_path+'latest_model.pt')
+        eval(model,test_iter,'test')
