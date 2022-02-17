@@ -1,0 +1,322 @@
+# coding: UTF-8
+import torch
+from tqdm import tqdm
+import time
+from datetime import timedelta
+import json
+from const import TRIGGERS
+import os
+import numpy as np
+
+PAD, CLS ,NONE= '[PAD]', '[CLS]' ,'NONE' # padding符号, bert中综合信息符号
+
+def load_embedding():
+    char2vec_file = 'pretrained/char2vec_file.mat.npy'
+    word2id_file='pretrained/word2id.npy'
+
+    char2vec_mat=np.load(char2vec_file)
+    word2id=np.load(word2id_file).tolist()
+    id2word={id:word for id, word in enumerate(word2id)}
+
+    return char2vec_mat,word2id,id2word
+
+
+def build_vocab(labels_trigger, BIO_tagging=True):
+    all_labels = [PAD,NONE]
+    for label in labels_trigger:
+        if BIO_tagging:
+            all_labels.append('B-{}'.format(label))
+            all_labels.append('I-{}'.format(label))
+        else:
+            all_labels.append(label)
+
+    label2idx = {tag: idx for idx, tag in enumerate(all_labels)}
+    idx2label = {idx: tag for idx, tag in enumerate(all_labels)}
+
+    return all_labels, label2idx, idx2label
+
+all_triggers, trigger2idx, idx2trigger = build_vocab(TRIGGERS)
+vec_mat,word2id,id2word=load_embedding()
+# all_entities, entity2idx, idx2entity = build_vocab(ENTITIES)
+# all_postags, postag2idx, idx2postag = build_vocab(POSTAGS, BIO_tagging=False)
+# all_arguments, argument2idx, idx2argument = build_vocab(ARGUMENTS,[], BIO_tagging=False)
+
+def build_dataset(path,config):
+
+    def load_dataset(path, pad_size=128):
+        cut_off=pad_size
+        contents = []
+
+        with open(path, 'r', encoding='UTF-8') as f:
+            data = json.load(f)
+            for item in data:
+                #event_count=len(item['trigger'])
+                #if event_count==0 or event_count==1:
+                #    continue
+                sentence=item['sentence'].strip()
+                token=[ sentence[i] for i in range(len(sentence))]
+                # token=[]
+                # for w in words:
+                    # t = config.tokenizer.tokenize(w)
+                    # token.extend(t)
+
+
+                # token = [CLS] + token
+                seq_len = len(token)
+                mask = []
+                token_ids=[]
+                for w in token:
+                    if w in word2id:
+                        token_ids.append(word2id.index(w))
+                    else:
+                        token_ids.append(word2id.index('UNK'))
+                # token_ids = config.tokenizer.convert_tokens_to_ids(token)
+                if pad_size:
+                    if len(token) < pad_size:
+                        mask = [1] * len(token_ids) + [0] * (pad_size - len(token))
+                        token_ids += ([0] * (pad_size - len(token)))
+                    else:
+                        mask = [1] * pad_size
+                        token_ids = token_ids[:pad_size]
+                        seq_len = pad_size
+                triggers=[NONE for _ in range(len(token))][:cut_off]
+                arguments = {
+                    'candidates': [
+                        # ex. (5, 6, "entity_type_str"), ...
+                    ],
+                    'events': {
+                        # ex. (1, 3, "trigger_type_str"): [(5, 6, "argument_role_idx"), ...]
+                    },
+                }
+                try:
+                    #   不需要论元信息
+                    # for entity_mention in item['arguments']:
+                    #     start = entity_mention['start']
+                    #     if start >= cut_off:
+                    #         continue
+                    #     end = min(entity_mention["end"], cut_off)
+                    #     arguments['candidates'].append((start+1, end+1, entity_mention['entity_type']))
+                    #
+                    #     for i in range(start, end):
+                    #         entity_type = entity_mention['entity_type']
+                    #         if i == start:
+                    #             entity_type = 'B-E-{}'.format(entity_type)
+                    #         else:
+                    #             entity_type = 'I-E-{}'.format(entity_type)
+                    #
+                    #         triggers_entities[i+1] = entity_type
+
+
+                    for event_mention in item['trigger']:
+                        if event_mention['start'] >= cut_off:
+                            continue
+                        for i in range(event_mention['start'],min(event_mention['end'], cut_off)):
+                            trigger_type = event_mention['event_type']
+                            if i == event_mention['start']:
+                                if triggers[i]==NONE:
+                                    triggers[i]= 'B-{}'.format(trigger_type)
+                            else:
+                                if triggers[i]==NONE:
+                                    triggers[i] = 'I-{}'.format(trigger_type)
+
+                        # 不需要以下信息
+                        # event_key = (event_mention['start']+1, min(event_mention['end'], cut_off)+1,event_mention['event_type'])
+                        # arguments['events'][event_key] = []
+                        # for argument in item['arguments']:
+                        #     if argument['start'] >= cut_off:
+                        #         continue
+                        #     role = argument['role']
+                        #
+                        #     arguments['events'][event_key].append(
+                        #         (argument['start']+1, min(argument['end'], cut_off)+1, argument2idx[role]))
+
+                    triggers_ids=[trigger2idx[i] for i in triggers]
+                    if pad_size:
+                        if len(triggers_ids) < pad_size:
+
+                            triggers_ids += ([0] * (pad_size - len(triggers_ids)))
+                        else:
+
+                            triggers_ids = triggers_ids[:pad_size]
+
+
+                    contents.append((token_ids,triggers_ids,seq_len,mask,token,triggers,arguments))
+                except:
+
+                    continue
+
+        return contents
+    train = load_dataset(path, config.pad_size)
+
+    return train
+
+
+class DatasetIterater(object):
+    def __init__(self, batches, batch_size, device):
+        self.batch_size = batch_size
+        self.batches = batches
+        self.n_batches = len(batches) // batch_size
+        self.residue = False  # 记录batch数量是否为整数
+        if len(batches) % self.n_batches != 0:
+            self.residue = True
+        self.index = 0
+        self.device = device
+
+    def _to_tensor(self, datas):
+        x = torch.LongTensor([_[0] for _ in datas]).to(self.device)
+        y = torch.LongTensor([_[1] for _ in datas]).to(self.device)
+
+        # pad前的长度(超过pad_size的设为pad_size)
+        seq_len = torch.LongTensor([_[2] for _ in datas]).to(self.device)
+        # mask = torch.LongTensor([_[3] for _ in datas]).to(self.device)
+        mask = [_[3] for _ in datas]
+        words=[_[4] for _ in datas]
+        trigger = [_[5] for _ in datas]
+        arguments=[_[-1] for _ in datas]
+
+
+        return (x, seq_len, mask,words,trigger,arguments), y
+
+    def __next__(self):
+        if self.residue and self.index == self.n_batches:
+            batches = self.batches[self.index * self.batch_size: len(self.batches)]
+            self.index += 1
+            batches = self._to_tensor(batches)
+            return batches
+
+        elif self.index >= self.n_batches:
+            self.index = 0
+            raise StopIteration
+        else:
+            batches = self.batches[self.index * self.batch_size: (self.index + 1) * self.batch_size]
+            self.index += 1
+            batches = self._to_tensor(batches)
+            return batches
+
+    def __iter__(self):
+        return self
+
+    def __len__(self):
+        if self.residue:
+            return self.n_batches + 1
+        else:
+            return self.n_batches
+
+
+def build_iterator(dataset, config):
+    iter = DatasetIterater(dataset, config.batch_size, config.device)
+    return iter
+
+
+def get_time_dif(start_time):
+    """获取已使用时间"""
+    end_time = time.time()
+    time_dif = end_time - start_time
+    return timedelta(seconds=int(round(time_dif)))
+
+
+def find_triggers(labels):
+    """
+    :param labels: ['B-Conflict:Attack', 'I-Conflict:Attack', 'O', 'B-Life:Marry']
+    :return: [(0, 2, 'Conflict:Attack'), (3, 4, 'Life:Marry')]
+    """
+    result_trigger = []
+    # result_entities=[]
+    labels = [label.split('-') for label in labels]
+
+    for i in range(len(labels)):
+        if labels[i][0] == 'B':
+            result_trigger.append([i, i + 1, labels[i][1]])
+
+    for item in result_trigger:
+        j = item[1]
+        while j < len(labels):
+            if labels[j][0] == 'I':
+                j = j + 1
+                item[1] = j
+            else:
+                break
+
+    return [tuple(item) for item in result_trigger]
+
+
+def calc_metric(y_true, y_pred):
+    """
+    :param y_true: [(tuple), ...]
+    :param y_pred: [(tuple), ...]
+    :return:
+    """
+    num_proposed = len(y_pred)
+    num_gold = len(y_true)
+
+    y_true_set = set(y_true)
+    num_correct = 0
+    for item in y_pred:
+        if item in y_true_set:
+            num_correct += 1
+
+    print('proposed: {}\tcorrect: {}\tgold: {}'.format(num_proposed, num_correct, num_gold))
+
+    if num_proposed != 0:
+        precision = num_correct / num_proposed
+    else:
+        precision = 1.0
+
+    if num_gold != 0:
+        recall = num_correct / num_gold
+    else:
+        recall = 1.0
+
+    if precision + recall != 0:
+        f1 = 2 * precision * recall / (precision + recall)
+    else:
+        f1 = 0
+
+    return precision, recall, f1
+
+
+def load_embedding_dict(path):
+    char2vec_file = 'pretrained/char2vec_file.mat.npy'
+    word2id_file='pretrained/word2id.npy'
+    #
+    # if os.path.exists(char2vec_file):
+    #     char2vec_mat=np.load(char2vec_file)
+    #     word2id=np.load(word2id_file).tolist()
+    #     id2word={id:word for id, word in enumerate(word2id)}
+    #
+    #
+    #     return char2vec_mat,word2id,id2word
+
+    with open(path, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+
+    char2vec_mat = []
+    word2id=['PAD','UNK']
+    id2word={0:'PAD',1:'UNK'}
+    char2vec_mat.append(np.random.normal(size=( 300)))
+    char2vec_mat.append(np.random.normal(size=(300)))
+
+    lines=lines[1:]
+    for id,line in enumerate(lines):
+        split = line.split(" ")
+        char=split[0]
+
+        id2word[len(word2id)] = char
+        word2id.append(char)
+        char2vec_mat.append(np.array(list(map(float, split[1:]))))
+
+    char2vec_mat = np.array(char2vec_mat, dtype=np.float32)
+
+
+    np.save(char2vec_file, char2vec_mat)
+    np.save(word2id_file,word2id)
+
+    return char2vec_mat,word2id,id2word
+
+if __name__ == '__main__':
+    # load_embedding_dict('pretrained/token_vec_300.bin')
+    # print(np.random.normal(size=(1, 300)))
+    # print(np.random.normal(size=(1, 300)))
+
+    tokens=['34','56','33']
+    print(tokens.index('34'))
