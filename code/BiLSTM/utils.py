@@ -8,8 +8,6 @@ from const import TRIGGERS
 import os
 import numpy as np
 
-PAD, CLS ,NONE= '[PAD]', '[CLS]' ,'NONE' # padding符号, bert中综合信息符号
-
 def load_embedding():
     char2vec_file = 'pretrained/char2vec_file.mat.npy'
     word2id_file='pretrained/word2id.npy'
@@ -37,9 +35,6 @@ def build_vocab(labels_trigger, BIO_tagging=True):
 
 all_triggers, trigger2idx, idx2trigger = build_vocab(TRIGGERS)
 vec_mat,word2id,id2word=load_embedding()
-# all_entities, entity2idx, idx2entity = build_vocab(ENTITIES)
-# all_postags, postag2idx, idx2postag = build_vocab(POSTAGS, BIO_tagging=False)
-# all_arguments, argument2idx, idx2argument = build_vocab(ARGUMENTS,[], BIO_tagging=False)
 
 def build_dataset(path,config):
 
@@ -50,18 +45,9 @@ def build_dataset(path,config):
         with open(path, 'r', encoding='UTF-8') as f:
             data = json.load(f)
             for item in data:
-                #event_count=len(item['trigger'])
-                #if event_count==0 or event_count==1:
-                #    continue
                 sentence=item['sentence'].strip()
                 token=[ sentence[i] for i in range(len(sentence))]
-                # token=[]
-                # for w in words:
-                    # t = config.tokenizer.tokenize(w)
-                    # token.extend(t)
 
-
-                # token = [CLS] + token
                 seq_len = len(token)
                 mask = []
                 token_ids=[]
@@ -70,7 +56,7 @@ def build_dataset(path,config):
                         token_ids.append(word2id.index(w))
                     else:
                         token_ids.append(word2id.index('UNK'))
-                # token_ids = config.tokenizer.convert_tokens_to_ids(token)
+                
                 if pad_size:
                     if len(token) < pad_size:
                         mask = [1] * len(token_ids) + [0] * (pad_size - len(token))
@@ -80,32 +66,8 @@ def build_dataset(path,config):
                         token_ids = token_ids[:pad_size]
                         seq_len = pad_size
                 triggers=[NONE for _ in range(len(token))][:cut_off]
-                arguments = {
-                    'candidates': [
-                        # ex. (5, 6, "entity_type_str"), ...
-                    ],
-                    'events': {
-                        # ex. (1, 3, "trigger_type_str"): [(5, 6, "argument_role_idx"), ...]
-                    },
-                }
-                try:
-                    #   不需要论元信息
-                    # for entity_mention in item['arguments']:
-                    #     start = entity_mention['start']
-                    #     if start >= cut_off:
-                    #         continue
-                    #     end = min(entity_mention["end"], cut_off)
-                    #     arguments['candidates'].append((start+1, end+1, entity_mention['entity_type']))
-                    #
-                    #     for i in range(start, end):
-                    #         entity_type = entity_mention['entity_type']
-                    #         if i == start:
-                    #             entity_type = 'B-E-{}'.format(entity_type)
-                    #         else:
-                    #             entity_type = 'I-E-{}'.format(entity_type)
-                    #
-                    #         triggers_entities[i+1] = entity_type
 
+                try:
 
                     for event_mention in item['trigger']:
                         if event_mention['start'] >= cut_off:
@@ -119,17 +81,6 @@ def build_dataset(path,config):
                                 if triggers[i]==NONE:
                                     triggers[i] = 'I-{}'.format(trigger_type)
 
-                        # 不需要以下信息
-                        # event_key = (event_mention['start']+1, min(event_mention['end'], cut_off)+1,event_mention['event_type'])
-                        # arguments['events'][event_key] = []
-                        # for argument in item['arguments']:
-                        #     if argument['start'] >= cut_off:
-                        #         continue
-                        #     role = argument['role']
-                        #
-                        #     arguments['events'][event_key].append(
-                        #         (argument['start']+1, min(argument['end'], cut_off)+1, argument2idx[role]))
-
                     triggers_ids=[trigger2idx[i] for i in triggers]
                     if pad_size:
                         if len(triggers_ids) < pad_size:
@@ -140,7 +91,7 @@ def build_dataset(path,config):
                             triggers_ids = triggers_ids[:pad_size]
 
 
-                    contents.append((token_ids,triggers_ids,seq_len,mask,token,triggers,arguments))
+                    contents.append((token_ids,triggers_ids,seq_len,mask,token,triggers))
                 except:
 
                     continue
@@ -172,10 +123,9 @@ class DatasetIterater(object):
         mask = [_[3] for _ in datas]
         words=[_[4] for _ in datas]
         trigger = [_[5] for _ in datas]
-        arguments=[_[-1] for _ in datas]
 
 
-        return (x, seq_len, mask,words,trigger,arguments), y
+        return (x, seq_len, mask,words,trigger), y
 
     def __next__(self):
         if self.residue and self.index == self.n_batches:
@@ -314,9 +264,5 @@ def load_embedding_dict(path):
     return char2vec_mat,word2id,id2word
 
 if __name__ == '__main__':
-    # load_embedding_dict('pretrained/token_vec_300.bin')
-    # print(np.random.normal(size=(1, 300)))
-    # print(np.random.normal(size=(1, 300)))
+    load_embedding_dict('pretrained/token_vec_300.bin')
 
-    tokens=['34','56','33']
-    print(tokens.index('34'))
