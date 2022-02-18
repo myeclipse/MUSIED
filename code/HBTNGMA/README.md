@@ -14,4 +14,4 @@ Please refer to this [repo](https://github.com/yubochen/NBTNGMA4ED) for data pre
 
 ### Note
 
-Please replace Chinese character embedding [token_vec_300.bin](https://github.com/liuhuanyong/ChineseEmbedding).
+Please use Chinese character embedding [token_vec_300.bin](https://github.com/liuhuanyong/ChineseEmbedding).
