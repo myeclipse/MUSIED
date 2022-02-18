@@ -14,7 +14,7 @@ This code is the implementation for BERT model. The implementations are based on
 
 ### Data Preprocess
 
-Run `preprocess.py` to obtain the sentence-level input of model. The result is saved in `data` directory.
+Put the [processed](../preprocess) sentence-level results in `data` directory.
 ```
 ├── data
 │     └── train_sentence.json
