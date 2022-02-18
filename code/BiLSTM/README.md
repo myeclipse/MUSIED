@@ -8,8 +8,6 @@ This code is the implementation for `BiLSTM` and `BiLSTM-CRF` model.
 
 --torch==1.7.0
 
---transformers==4.9.2
-
 ## Usage
 
 ### Download character embedding
