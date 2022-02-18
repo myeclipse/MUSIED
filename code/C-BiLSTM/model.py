@@ -22,6 +22,7 @@ class Model(nn.Module):
                       nn.Linear(128, len(all_triggers)))
 
         self.device=config.device
+        self.cnn=nn.Conv1d(in_channels=config.hidden_size, out_channels=config.hidden_size, kernel_size=3,paddin    g=1)
 
         self.lstm = nn.LSTM(config.hidden_size, config.rnn_hidden//2, config.num_layers,
                             bidirectional=True, batch_first=True)
@@ -35,6 +36,10 @@ class Model(nn.Module):
 
         triggers_y_2d = label
         encoder_out=self.embedding(context)
+        
+        encoder_out = encoder_out.transpose(1, 2)
+        encoder_out=self.cnn(encoder_out)
+        encoder_out = encoder_out.transpose(1, 2)
 
         encoder_out, _ = self.lstm(encoder_out)
         out=self.fc(encoder_out)
