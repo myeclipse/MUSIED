@@ -7,7 +7,7 @@ The dataset can be obtained from the “data” folder. The data format is intro
 
 ### Data preprocess
 
-Run `preprocess.py` to obtain the sentence-level input of model. The result is saved in `data` directory.
+Run `preprocessing.py` to obtain the sentence-level input of model. The result is saved in `data` directory.
 ```
 ├── data
 │     └── train_sentence.json
