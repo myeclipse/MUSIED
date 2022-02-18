@@ -5,8 +5,9 @@ paths=[
         'test.json'
        ]
 
-result=[]
+
 for file_path in paths:
+    result=[]
     with open(root+file_path, 'r', encoding='UTF-8') as f:
         data = json.load(f)
         for d in data:
