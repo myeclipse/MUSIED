@@ -28,7 +28,7 @@ Run `pre_embedding.py` to obtain `char2vec_file.mat.npy` and `word2id.npy` and p
 
 ### Data preprocess
 
-Refer to [BERT](../BERT) to obtain the sentence-level input of model. The result is saved in data directory.
+Put the [processed](../../data) sentence-level results in `data` directory.
 
 ```
 ├── data
