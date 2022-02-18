@@ -14,5 +14,5 @@ Please refer to this [repo](https://github.com/zjunlp/DocED) for data preprocess
 
 ### Note
 
-Please replace Chinese character embedding [token_vec_300.bin](https://github.com/liuhuanyong/ChineseEmbedding).
+Please use Chinese character embedding [token_vec_300.bin](https://github.com/liuhuanyong/ChineseEmbedding).
 
