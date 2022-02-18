@@ -1,14 +1,12 @@
-# BiLSTM
+# C-BiLSTM
 
-This code is the implementation for `BiLSTM` and `BiLSTM-CRF` model.
+This code is the implementation for `C-BiLSTM` model.
 
 ## Requirements
 
 --python==3.8.10
 
 --torch==1.7.0
-
---transformers==4.9.2
 
 ## Usage
 
