@@ -1,6 +1,6 @@
 # MSInformalED Dataset
 
-`MSInformalED.zip` file includes `train.json`, `dev.json` and `test.json` of MSInformalED dataset. The data format of the three `.json` files are the same. Each file contains a list and each item in list is a dict for a document. Take an instance in `train.json` as an example:
+`7dae4a43-FoodSafetyED.zip` file includes `train.json`, `dev.json` and `test.json` of MSInformalED dataset. The data format of the three `.json` files are the same. Each file contains a list and each item in list is a dict for a document. Take an instance in `train.json` as an example:
 
 ```JSON5
 [   // A list, each item is a dict for a document
