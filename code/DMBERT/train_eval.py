@@ -37,7 +37,7 @@ def eval(model, iterator, fname,sent_id2_event):
     with torch.no_grad():
         # for i, batch in enumerate(iterator):
         for i, (test, labels) in enumerate(iterator):
-            trigger_logits, trigger_hat_2d, triggers_y_2d, sent_ids,_, _, _, _, _ = model(test, labels)
+            trigger_logits, trigger_hat_2d, triggers_y_2d, sent_ids= model(test, labels)
 
 
             # words_all.extend(test[3])
@@ -112,7 +112,7 @@ def train(config, model, train_iter, dev_iter,sent_id2_event):
         print('Epoch [{}/{}]'.format(epoch + 1, config.num_epochs))
         for i, (trains, labels) in enumerate(train_iter):
             model.zero_grad()
-            trigger_logits, trigger_hat_2d, triggers_y_2d,sent_ids,_, _, _, _,_= model(trains,labels)
+            trigger_logits, trigger_hat_2d, triggers_y_2d,sent_ids= model(trains,labels)
 
 
             trigger_logits = trigger_logits.view(-1, trigger_logits.shape[-1])
