@@ -1,4 +1,4 @@
-# MSInformalED
+# MUSIED
 Dataset and baselines for paper "MUSIED: A Benchmark for Event Detection from Multi-Source Heterogeneous Informal Texts".
 
 ## Data
