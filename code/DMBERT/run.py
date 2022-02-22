@@ -9,12 +9,7 @@ from importlib import import_module
 import argparse
 from utils import build_dataset, build_iterator, get_time_dif
 from transformers import BertTokenizer
-from models.dmbert import Model
-
-# parser = argparse.ArgumentParser(description='Chinese Event Extraction')
-# parser.add_argument('--model', type=str, default='dmbert', help='choose a model: Bert')
-# args = parser.parse_args()
-
+from dmbert import Model
 
 
 
