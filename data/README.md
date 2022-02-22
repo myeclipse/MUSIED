@@ -1,6 +1,6 @@
 # MSInformalED Dataset
 
-`7dae4a43-FoodSafetyED.zip` file includes `train.json`, `dev.json` and `test.json` of MSInformalED dataset. The data format of the three `.json` files are the same. Each file contains a list and each item in list is a dict for a document. Take an instance in `train.json` as an example:
+`7dae4a43-MUSIED.zip` file includes `train.json`, `dev.json` and `test.json` of MUSIED dataset. The data format of the three `.json` files are the same. Each file contains a list and each item in list is a dict for a document. Take an instance in `train.json` as an example:
 
 ```JSON5
 [   // A list, each item is a dict for a document
@@ -50,7 +50,7 @@
 
 ## Data Statistics
 
-MSInformalED data constains three domains: `User Review`, `Text Conversation` and `Phone Conversation`. There are 11381 documents and 36883 event mentions in MSInformalED. The detail statistics are shown in the following figure:
+MUSIED data constains three domains: `User Review`, `Text Conversation` and `Phone Conversation`. There are 11381 documents and 36883 event mentions in MUSIED. The detail statistics are shown in the following figure:
 
 ![image](pictures/91BD8F65-7D87-42F5-A5B5-301918EB3D38.jpeg)
 
