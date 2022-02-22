@@ -22,9 +22,7 @@ def build_vocab(labels_trigger, BIO_tagging=False):
     return all_labels, label2idx, idx2label
 
 all_triggers, trigger2idx, idx2trigger = build_vocab(TRIGGERS,BIO_tagging=True)
-# all_entities, entity2idx, idx2entity = build_vocab(ENTITIES)
-# all_postags, postag2idx, idx2postag = build_vocab(POSTAGS, BIO_tagging=False)
-# all_arguments, argument2idx, idx2argument = build_vocab(ARGUMENTS,[], BIO_tagging=False)
+
 
 def build_dataset(path,config):
 
@@ -35,7 +33,7 @@ def build_dataset(path,config):
         with open(path, 'r', encoding='UTF-8') as f:
             data = json.load(f)
             print(len(data))
-            # print(len(data))
+
             for item in data:
                 senid=item['id']
                 sentence=item['sentence'].strip()
@@ -76,70 +74,8 @@ def build_dataset(path,config):
                 else:
                     label=trigger2idx['NONE']
 
-                # triggers=[NONE for _ in range(len(token))][:cut_off]
-                # arguments = {
-                #     'candidates': [
-                #         # ex. (5, 6, "entity_type_str"), ...
-                #     ],
-                #     'events': {
-                #         # ex. (1, 3, "trigger_type_str"): [(5, 6, "argument_role_idx"), ...]
-                #     },
-                # }
-                # try:
-                    #   不需要论元信息
-                    # for entity_mention in item['arguments']:
-                    #     start = entity_mention['start']
-                    #     if start >= cut_off:
-                    #         continue
-                    #     end = min(entity_mention["end"], cut_off)
-                    #     arguments['candidates'].append((start+1, end+1, entity_mention['entity_type']))
-                    #
-                    #     for i in range(start, end):
-                    #         entity_type = entity_mention['entity_type']
-                    #         if i == start:
-                    #             entity_type = 'B-E-{}'.format(entity_type)
-                    #         else:
-                    #             entity_type = 'I-E-{}'.format(entity_type)
-                    #
-                    #         triggers_entities[i+1] = entity_type
-
-
-                    # for event_mention in item['trigger']:
-                    #     if event_mention['start'] >= cut_off:
-                    #         continue
-                    #     for i in range(event_mention['start'],min(event_mention['end'], cut_off)):
-                    #         trigger_type = event_mention['event_type']
-                    #         if i == event_mention['start']:
-                    #             triggers[i+1]= 'B-{}'.format(trigger_type)
-                    #         else:
-                    #
-                    #             triggers[i+1] = 'I-{}'.format(trigger_type)
-
-                        # 不需要以下信息
-                        # event_key = (event_mention['start']+1, min(event_mention['end'], cut_off)+1,event_mention['event_type'])
-                        # arguments['events'][event_key] = []
-                        # for argument in item['arguments']:
-                        #     if argument['start'] >= cut_off:
-                        #         continue
-                        #     role = argument['role']
-                        #
-                        #     arguments['events'][event_key].append(
-                        #         (argument['start']+1, min(argument['end'], cut_off)+1, argument2idx[role]))
-
-                    # triggers_ids=[trigger2idx[i] for i in triggers]
-                    # if pad_size:
-                    #     if len(triggers_ids) < pad_size:
-                    #
-                    #         triggers_ids += ([0] * (pad_size - len(triggers_ids)))
-                    #     else:
-                    #
-                    #         triggers_ids = triggers_ids[:pad_size]
-
-
                 contents.append((token_ids,[label],seq_len,mask,token,maskL,maskR,senid))
-                # except:
-                #
-                #     continue
+
 
         return contents
     train = load_dataset(path, config.pad_size)
@@ -171,11 +107,8 @@ class DatasetIterater(object):
         maskR = torch.FloatTensor([_[-2] for _ in datas]).to(self.device)
 
         sen_ids=[_[-1] for _ in datas]
-        # trigger = [_[5] for _ in datas]
-        # arguments=[_[-1] for _ in datas]
 
         return (x, seq_len, mask, words, maskL, maskR,sen_ids), y
-        # return (x, seq_len, mask,words,trigger,arguments), y
 
     def __next__(self):
         if self.residue and self.index == self.n_batches:
