@@ -18,11 +18,11 @@ class Config(object):
     """配置参数"""
     def __init__(self, dataset):
         self.model_name = 'bert'
-        self.train_path = dataset + '/customer/train_sentence_dmcnn.json'
-        # self.dev_path = dataset + '/data/customer/test_sentence_dmcnn.json'
-        self.test_path = dataset + '/customer/test_sentence_dmcnn.json'
-        self.sen_id2_event = dataset + '/customer/test_sentence_dmcnn_id2event.json'
-        self.save_path = dataset + '/result/customer'                               # 训练集
+        self.train_path = dataset + '/train_sentence_dmcnn.json'
+        self.dev_path = dataset + '/test_sentence_dmcnn.json'
+        self.test_path = dataset + '/test_sentence_dmcnn.json'
+        self.sen_id2_event = dataset + '/customer/dev_sentence_dmcnn_id2event.json'
+        self.save_path = dataset + '/result'                               # 训练集
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')   # 设备
 
         self.require_improvement = 1000                                 # 若超过1000batch效果还没提升，则提前结束训练
@@ -41,9 +41,6 @@ class Config(object):
 if __name__ == '__main__':
     dataset = 'data'  # 数据集
 
-    # model_name = args.model  # bert
-    # x = import_module('models.' + model_name)
-
     config = Config(dataset)
 
     with open(config.sen_id2_event,'r') as f:
@@ -52,28 +49,25 @@ if __name__ == '__main__':
     # torch.manual_seed(11)
     # torch.cuda.manual_seed_all(11)
     # torch.backends.cudnn.deterministic = True  # 保证每次结果一样
-    model = Model(config).to(config.device)
-    model=torch.load('latest_model.pt')
+
     start_time = time.time()
     print("Loading data...")
-    #test_data = build_dataset(config.test_path, config)
+
     train_data = build_dataset(config.train_path, config)
-    # dev_data = build_dataset(config.dev_path, config)
+    dev_data = build_dataset(config.dev_path, config)
     test_data = build_dataset(config.test_path, config)
-    #random.shuffle(test_data)
-    #print(len(test_data))
-    #test_data=test_data[:100000]
-    #with open('test','w',encoding='utf-8') as f:
-        #json.dump(test_data,f,ensure_ascii=False)
+
     train_iter = build_iterator(train_data, config)
-    # dev_iter = build_iterator(dev_data, config)
+    dev_iter = build_iterator(dev_data, config)
     test_iter = build_iterator(test_data, config)
 
     time_dif = get_time_dif(start_time)
     print("Time usage:", time_dif)
 
     # train
-    #model = Model(config).to(config.device)
+    model = Model(config).to(config.device)
+    train(config, model, train_iter, dev_iter,sent_id2_event)
+    # eval
     #model=torch.load('latest_model.pt')
     #eval(model,test_iter,'test',sent_id2_event)
-    train(config, model, train_iter, test_iter,sent_id2_event)
+    
