@@ -37,9 +37,6 @@ def build_dataset(path,config):
             data = json.load(f)
             for c,item in enumerate(data):
 
-                if len(item['trigger']) ==0:
-                    if c%3==0:
-                        continue
                 sentence=item['sentence'].strip()
                 words=[ sentence[i] for i in range(len(sentence))]
                 token=[]
