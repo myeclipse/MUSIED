@@ -50,7 +50,7 @@
 
 ## Data Statistics
 
-MUSIED data constains three domains: `User Review`, `Text Conversation` and `Phone Conversation`. There are 11381 documents and 36883 event mentions in MUSIED. The detail statistics are shown in the following figure:
+MUSIED data constains three domains: `User Review`, `Text Conversation` and `Phone Conversation`. There are 11381 documents and 35313 event mentions in MUSIED. The detail statistics are shown in the following figure:
 
 ![image](pictures/91BD8F65-7D87-42F5-A5B5-301918EB3D38.jpeg)
 
